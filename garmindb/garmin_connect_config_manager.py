@@ -106,6 +106,15 @@ class GarminConnectConfigManager(JsonConfig):
             return self.__create_dir_if_needed(self.homedir + os.sep + base)
         return self.__create_dir_if_needed(base)
 
+    def get_sync_dir(self):
+        """Return the configured directory of where the data files will be synced to after a run."""
+        sync_dir = self.get_node_value('directories', 'sync_dir')
+        if sync_dir:
+            if self.get_node_value_default('directories', 'relative_to_home', True):
+                return self.homedir + os.sep + sync_dir
+            return sync_dir
+        return None
+
     def get_backup_dir(self):
         """Return the path to the backup directory."""
         return self.__create_dir_if_needed(self.get_base_dir() + os.sep + 'Backups')
