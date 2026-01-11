@@ -42,6 +42,11 @@ class ActivitiesCommon(idbutils.DbObject):
     # kmph or mph
     avg_speed = Column(Float)
     max_speed = Column(Float)
+    # watts
+    avg_power = Column(Integer)
+    max_power = Column(Integer)
+    normalized_power = Column(Integer)
+    threshold_power = Column(Integer)
     # feet or meters
     ascent = Column(Float)
     descent = Column(Float)
@@ -98,7 +103,7 @@ class Activities(ActivitiesDb.Base, ActivitiesCommon):
     __tablename__ = 'activities'
 
     db = ActivitiesDb
-    table_version = 5
+    table_version = 6
 
     activity_id = Column(String, primary_key=True)
     name = Column(String)
@@ -188,7 +193,7 @@ class ActivityLaps(ActivitiesDb.Base, ActivitiesCommon):
     __tablename__ = 'activity_laps'
 
     db = ActivitiesDb
-    table_version = 4
+    table_version = 5
 
     activity_id = Column(String, ForeignKey('activities.activity_id'))
     lap = Column(Integer)
@@ -277,7 +282,7 @@ class ActivityRecords(ActivitiesDb.Base, idbutils.DbObject):
     __tablename__ = 'activity_records'
 
     db = ActivitiesDb
-    table_version = 3
+    table_version = 4
 
     activity_id = Column(String, ForeignKey('activities.activity_id'))
     record = Column(Integer)
@@ -289,6 +294,7 @@ class ActivityRecords(ActivitiesDb.Base, idbutils.DbObject):
     altitude = Column(Float)
     hr = Column(Integer)            # beats per minute
     rr = Column(Float)              # breaths per minute
+    power = Column(Integer)         # watts
     altitude = Column(Float)        # feet or meters
     speed = Column(Float)           # kmph or mph
     temperature = Column(Float)     # C or F
