@@ -47,10 +47,19 @@ class GarminWeightData(JsonFileProcessor):
     def _process_json(self, json_data):
         weight_list = json_data['dateWeightList']
         if len(weight_list) > 0:
-            weight = fitfile.Weight.from_grams(weight_list[0]['weight'])
+            weight_item = weight_list[0]
+            weight = fitfile.Weight.from_grams(weight_item['weight'])
+            bone_mass = fitfile.Weight.from_grams(weight_item.get('boneMass'))
+            muscle_mass = fitfile.Weight.from_grams(weight_item.get('muscleMass'))
             point = {
-                'day': json_data['startDate'].date(),
-                'weight': weight.kgs_or_lbs(self.measurement_system)
+                'day'           : json_data['startDate'].date(),
+                'weight'        : weight.kgs_or_lbs(self.measurement_system),
+                'bmi'           : weight_item.get('bmi'),
+                'body_fat'      : weight_item.get('bodyFat'),
+                'body_water'    : weight_item.get('bodyWater'),
+                'bone_mass'     : bone_mass.kgs_or_lbs(self.measurement_system),
+                'muscle_mass'   : muscle_mass.kgs_or_lbs(self.measurement_system),
+                'visceral_fat'  : weight_item.get('visceralFat')
             }
             Weight.insert_or_update(self.garmin_db, point)
             return 1

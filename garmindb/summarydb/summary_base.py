@@ -15,10 +15,10 @@ from idbutils import DbObject
 class SummaryBase(DbObject):
     """Base class for implementing summary database objects."""
 
-    view_version = 10
-    _table_version = 5
+    view_version = 11
+    _table_version = 6
     _col_units = {'hr_avg': 'bpm', 'hr_min': 'bpm', 'hr_max': 'bpm', 'rhr_avg': 'bpm', 'rhr_min': 'bpm', 'rhr_max': 'bpm', 'rr_waking_avg': 'brpm', 'rr_max': 'brpm',
-                  'rr_min': 'brpm'}
+                  'rr_min': 'brpm', 'body_fat_avg': '%', 'body_water_avg': '%'}
 
     hr_avg = Column(Float)
     hr_min = Column(Float)
@@ -32,6 +32,12 @@ class SummaryBase(DbObject):
     weight_avg = Column(Float)
     weight_min = Column(Float)
     weight_max = Column(Float)
+    bmi_avg = Column(Float)
+    body_fat_avg = Column(Float)
+    body_water_avg = Column(Float)
+    bone_mass_avg = Column(Float)
+    muscle_mass_avg = Column(Float)
+    visceral_fat_avg = Column(Float)
     intensity_time = Column(Time, nullable=False, default=datetime.time.min)
     moderate_activity_time = Column(Time, nullable=False, default=datetime.time.min)
     vigorous_activity_time = Column(Time, nullable=False, default=datetime.time.min)
@@ -136,6 +142,12 @@ class SummaryBase(DbObject):
             cls.round_col('rhr_avg', 'rhr'),
             cls.round_col('inactive_hr_avg', 'inactive_hr'),
             cls.round_col('weight_avg', 'weight'),
+            cls.round_col('bmi_avg', 'bmi'),
+            cls.round_col('body_fat_avg', 'body_fat'),
+            cls.round_col('body_water_avg', 'body_water'),
+            cls.round_col('bone_mass_avg', 'bone_mass'),
+            cls.round_col('muscle_mass_avg', 'muscle_mass'),
+            cls.round_col('visceral_fat_avg', 'visceral_fat'),
             cls.intensity_time.label('intensity_time'),
             cls.moderate_activity_time.label('moderate_activity_time'),
             cls.vigorous_activity_time.label('vigorous_activity_time'),
@@ -191,6 +203,12 @@ class SummaryBase(DbObject):
             cls.round_col('rhr_avg', 'rhr'),
             cls.round_col('inactive_hr_avg', 'inactive_hr'),
             cls.round_col('weight_avg', 'weight'),
+            cls.round_col('bmi_avg', 'bmi'),
+            cls.round_col('body_fat_avg', 'body_fat'),
+            cls.round_col('body_water_avg', 'body_water'),
+            cls.round_col('bone_mass_avg', 'bone_mass'),
+            cls.round_col('muscle_mass_avg', 'muscle_mass'),
+            cls.round_col('visceral_fat_avg', 'visceral_fat'),
             cls.intensity_time.label('intensity_time'), cls.moderate_activity_time.label('moderate_activity_time'), cls.vigorous_activity_time.label('vigorous_activity_time'),
             cls.steps.label('steps'),
             # cls.steps_goal_percent,

@@ -185,10 +185,16 @@ class Weight(GarminDb.Base, idbutils.DbObject):
     __tablename__ = 'weight'
 
     db = GarminDb
-    table_version = 1
+    table_version = 2
 
     day = Column(Date, primary_key=True)
     weight = Column(Float, nullable=False)
+    bmi = Column(Float)
+    body_fat = Column(Float)
+    body_water = Column(Float)
+    bone_mass = Column(Float)
+    muscle_mass = Column(Float)
+    visceral_fat = Column(Float)
 
     @classmethod
     def get_stats(cls, session, start_ts, end_ts):
@@ -196,7 +202,13 @@ class Weight(GarminDb.Base, idbutils.DbObject):
         return {
             'weight_avg': cls.s_get_col_avg(session, cls.weight, start_ts, end_ts, True),
             'weight_min': cls.s_get_col_min(session, cls.weight, start_ts, end_ts, True),
-            'weight_max': cls.s_get_col_max(session, cls.weight, start_ts, end_ts)
+            'weight_max': cls.s_get_col_max(session, cls.weight, start_ts, end_ts),
+            'bmi_avg': cls.s_get_col_avg(session, cls.bmi, start_ts, end_ts, True),
+            'body_fat_avg': cls.s_get_col_avg(session, cls.body_fat, start_ts, end_ts, True),
+            'body_water_avg': cls.s_get_col_avg(session, cls.body_water, start_ts, end_ts, True),
+            'bone_mass_avg': cls.s_get_col_avg(session, cls.bone_mass, start_ts, end_ts, True),
+            'muscle_mass_avg': cls.s_get_col_avg(session, cls.muscle_mass, start_ts, end_ts, True),
+            'visceral_fat_avg': cls.s_get_col_avg(session, cls.visceral_fat, start_ts, end_ts, True)
         }
 
 
