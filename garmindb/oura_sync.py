@@ -15,6 +15,10 @@ def sync_data(client, db_manager, start_date=None, end_date=None):
 
     logger.info(f"Syncing data from {start_date} to {end_date}")
 
+    if not client.session:
+        logger.error("Oura client not authenticated. Please run with --oura_auth first.")
+        return
+
     with db_manager.managed_session() as session:
         # Profile
         logger.info("Syncing Profile...")

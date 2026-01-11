@@ -7,6 +7,6 @@ cd /Users/joelgerard/dev/git/GarminDB
 
 # Load the virtual environment and run garmindb_cli.py
 # We use the absolute path to the venv python to ensure it has all dependencies.
-./.venv/bin/python3 scripts/garmindb_cli.py --sleep --all --hrv --download --import --analyze --latest
+./.venv/bin/python3 scripts/garmindb_cli.py -f "/Users/joelgerard/My Drive/joel health/tree health/tree_home/.GarminDb/GarminConnectConfig.json" --sleep --all --hrv --download --import --analyze --latest
 
 echo "GarminDB sync completed at $(date)"
