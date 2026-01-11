@@ -35,6 +35,11 @@ from garmindb import ActivityExporter
 from garmindb import GarminConnectConfigManager, PluginManager
 from garmindb import Statistics
 from garmindb import OpenWithBaseCamp, OpenWithGoogleEarth
+from garmindb.oura_config import OuraConfigManager
+from garmindb.oura_client import OuraClient
+from garmindb.oura_db import OuraDb
+from garmindb.oura_sync import sync_data as sync_oura_data
+from garmindb.oura_auth import run_auth as auth_oura
 
 
 logging.basicConfig(filename='garmindb.log', filemode='w', level=logging.INFO)
@@ -344,6 +349,7 @@ def main(argv):
     modes_group.add_argument("-e", "--export-activity", help="Export an activity to a TCX file based on the activity\'s id", type=int)
     modes_group.add_argument("--basecamp-activity", help="Export an activity to Garmin BaseCamp", type=int)
     modes_group.add_argument("-g", "--google-earth-activity", help="Export an activity to Google Earth", type=int)
+    modes_group.add_argument("--oura_auth", help="Authenticate with Oura API.", action="store_true", default=False)
     # stat types to operate on
     stats_group = parser.add_argument_group('Statistics')
     stats_group.add_argument("-A", "--all", help="Download and/or import data for all enabled stats.", action="store_true", default=False)
@@ -406,6 +412,31 @@ def main(argv):
 
     if args.google_earth_activity:
         garminDbMain.google_earth_activity(args.trace, args.google_earth_activity)
+
+    if args.all and (args.download_data or args.import_data):
+        try:
+            root_logger.info("___Syncing Oura Data___")
+            oura_config = OuraConfigManager(args.config)
+            if oura_config.get_client_id() and oura_config.get_client_secret():
+                oura_client = OuraClient(oura_config)
+                oura_db = OuraDb(oura_config.get_db_params())
+                sync_oura_data(oura_client, oura_db)
+            else:
+                root_logger.info("Oura config not found or incomplete, skipping Oura sync.")
+        except Exception as e:
+            root_logger.error(f"Oura sync failed: {e}")
+
+    if args.oura_auth:
+        try:
+            root_logger.info("___Authenticating with Oura___")
+            oura_config = OuraConfigManager(args.config)
+            if oura_config.get_client_id() and oura_config.get_client_secret():
+                oura_client = OuraClient(oura_config)
+                auth_oura(oura_client)
+            else:
+                 root_logger.error("Oura config missing client_id or client_secret.")
+        except Exception as e:
+             root_logger.error(f"Oura authentication failed: {e}")
 
     garminDbMain.sync_data()
 

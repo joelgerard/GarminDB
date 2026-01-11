@@ -49,5 +49,9 @@
     },
     "checkup": {
         "look_back_days"                : 90
+    },
+    "oura": {
+        "client_id"                     : "YOUR_OURA_CLIENT_ID",
+        "client_secret"                 : "YOUR_OURA_CLIENT_SECRET"
     }
 }

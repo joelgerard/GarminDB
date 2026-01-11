@@ -48,6 +48,42 @@ The scripts are automated with [Make](https://www.gnu.org/software/make/manual/m
 
 There is more help on [using the program](https://github.com/tcgoetz/GarminDB/wiki/Usage) in the wiki.
 
+# Oura Integration
+
+GarminDB now supports Oura Ring data. It creates a separate `oura.db` and can fetch data for sleep, activity, readiness, heart rate, and more.
+
+## Setup
+
+1.  **Dependencies**: Install the required packages:
+    ```bash
+    pip install -r requirements.txt
+    ```
+2.  **Configuration**: Add an `oura` section to your `~/.GarminDb/GarminConnectConfig.json` (see `GarminConnectConfig.json.example` for reference).
+    ```json
+    "oura": {
+        "client_id": "YOUR_OURA_CLIENT_ID",
+        "client_secret": "YOUR_OURA_CLIENT_SECRET"
+    }
+    ```
+    The redirect URL should be `http://localhost:8989`.
+3.  **Authentication**:
+    Run the authentication command to link your Oura account:
+    ```bash
+    ./scripts/garmindb_cli.py --oura_auth
+    ```
+    This will open a browser window to authorize access.
+
+4.  **Sync**:
+    Oura data is automatically synced when you run `garmindb` with the `--all` flag alongside download or import:
+    ```bash
+    ./scripts/garmindb_cli.py --all --download --import
+    ```
+    
+    Alternatively, you can use the standalone Oura CLI tool:
+    ```bash
+    ./scripts/oura_cli.py sync --days 7
+    ```
+
 # Jupyter Notebooks #
 
 Jupyter notebooks for analzing data from the database can be found in the 'Jupyter' directory in the source tree. [Links](https://github.com/tcgoetz/GarminDB/wiki/Related-Projects#jupyter-notebooks) to user submitted notebooks can be found in the wiki.
