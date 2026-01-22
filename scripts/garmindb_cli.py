@@ -314,17 +314,16 @@ class GarminDbMain():
         """Sync data from base_dir to sync_dir if configured."""
         sync_dir = self.gc_config.get_sync_dir()
         if sync_dir:
-            base_dir = self.gc_config.get_base_dir()
+            db_dir = self.gc_config.get_db_dir()
+            sync_db_dir = sync_dir + os.sep + 'DBs'
             logger.info("___Syncing Data___")
-            logger.info("Syncing %s to %s", base_dir, sync_dir)
-            if not os.path.exists(sync_dir):
-                os.makedirs(sync_dir)
-            # Use cp -r via subprocess to handle the copy more robustly on macOS with potential metadata/permission issues
-            # or just shutil.copytree if we want to stay within Python. shutil.copytree expects the dest to not exist or use dirs_exist_ok.
-            # Since we want to update the existing sync_dir, we'll use a more surgical approach or a system command.
+            logger.info("Syncing %s to %s", db_dir, sync_db_dir)
+            if not os.path.exists(sync_db_dir):
+                os.makedirs(sync_db_dir)
             try:
-                # rsync would be ideal but cp -R is more universal for these scripts
-                subprocess.run(['cp', '-R', base_dir + os.sep, sync_dir], check=True)
+                dbs = glob.glob(db_dir + os.sep + '*.db')
+                for db in dbs:
+                    shutil.copy2(db, sync_db_dir)
                 logger.info("Sync complete.")
             except Exception as e:
                 logger.error("Failed to sync data: %s", e)
