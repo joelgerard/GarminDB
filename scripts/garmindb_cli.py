@@ -321,7 +321,7 @@ class GarminDbMain():
             if not os.path.exists(sync_db_dir):
                 os.makedirs(sync_db_dir)
             try:
-                dbs = glob.glob(db_dir + os.sep + '*.db')
+                dbs = glob.glob(db_dir + os.sep + '*.db*')
                 for db in dbs:
                     shutil.copy2(db, sync_db_dir)
                 logger.info("Sync complete.")
