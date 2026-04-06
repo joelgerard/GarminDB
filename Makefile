@@ -80,7 +80,7 @@ clean_venv:
 	rm -rf $(VENV)
 
 version_check:
-	python3 -c "v={}; exec(open('garmindb/version_info.py').read(), v); import sys; req=v['dev_python_required']; tested=v['python_tested']; print(f'Python version check: current={sys.version_info[:3]}, required={req}, tested={tested}'); sys.exit(0 if sys.version_info >= req else 1)"
+	$(PYTHON_PATH) -c 'import sys; import garmindb.version; garmindb.version.python_dev_version_check(sys.argv[0])'
 
 update: submodules_update
 	git pull
@@ -100,7 +100,7 @@ builddeps: $(VENV) devdeps
 
 build: builddeps
 	cp pyproject.toml.in pyproject.toml
-	$(UV_PATH) add --no-sync -r requirements.txt
+	uv add -r requirements.txt --frozen
 	$(PYTHON_PATH) -m build
 
 build_clean:

@@ -52,14 +52,14 @@ class GarminWeightData(JsonFileProcessor):
             bone_mass = fitfile.Weight.from_grams(weight_item.get('boneMass'))
             muscle_mass = fitfile.Weight.from_grams(weight_item.get('muscleMass'))
             point = {
-                'day'           : json_data['startDate'].date(),
-                'weight'        : weight.kgs_or_lbs(self.measurement_system),
-                'bmi'           : weight_item.get('bmi'),
-                'body_fat'      : weight_item.get('bodyFat'),
-                'body_water'    : weight_item.get('bodyWater'),
-                'bone_mass'     : bone_mass.kgs_or_lbs(self.measurement_system),
-                'muscle_mass'   : muscle_mass.kgs_or_lbs(self.measurement_system),
-                'visceral_fat'  : weight_item.get('visceralFat')
+                'day': json_data['startDate'],
+                'weight': weight.kgs_or_lbs(self.measurement_system),
+                'bmi': weight_item.get('bmi'),
+                'body_fat': weight_item.get('bodyFat'),
+                'body_water': weight_item.get('bodyWater'),
+                'bone_mass': bone_mass.kgs_or_lbs(self.measurement_system),
+                'muscle_mass': muscle_mass.kgs_or_lbs(self.measurement_system),
+                'visceral_fat': weight_item.get('visceralFat')
             }
             Weight.insert_or_update(self.garmin_db, point)
             return 1
@@ -81,7 +81,7 @@ class GarminMonitoringFitData(FitData):
         debug (Boolean): enable debug logging
 
         """
-        super().__init__(input_dir, debug, latest, True, [fitfile.FileType.monitoring_b], measurement_system)
+        super().__init__(input_dir, debug, latest, True, [fitfile.FileType.monitoring_b, fitfile.FileType.hrv_status], measurement_system)
 
 
 class GarminSleepFitData(FitData):
@@ -177,7 +177,6 @@ class GarminSleepData(JsonFileProcessor):
         date = daily_sleep.get('calendarDate')
         if date is None:
             return 0
-        day = date.date()
         # Find the UTC offset so we can convert times to local
         start_utc = daily_sleep.get('sleepStartTimestampGMT')
         start_local = daily_sleep.get('sleepStartTimestampLocal')
@@ -187,10 +186,10 @@ class GarminSleepData(JsonFileProcessor):
             utc_offset = 0
         self.local_tz = datetime.timezone(datetime.timedelta(seconds=utc_offset))
         if json_data.get('remSleepData'):
-            root_logger.info("Importing %s with REM data and UTC offset %r", day, utc_offset)
+            root_logger.info("Importing %s with REM data and UTC offset %r", date, utc_offset)
             sleep_activity_levels = RemSleepActivityLevels
         else:
-            root_logger.info("Importing %s without REM data and UTC offset %r", day, utc_offset)
+            root_logger.info("Importing %s without REM data and UTC offset %r", date, utc_offset)
             sleep_activity_levels = SleepActivityLevels
         score = None
         qualifier = None
@@ -199,10 +198,10 @@ class GarminSleepData(JsonFileProcessor):
             score = sleep_core_overall.get('value')
             qualifier = sleep_core_overall.get('qualifierKey')
         except AttributeError:
-            root_logger.warn("Could not get sleep score for %s", day)
+            root_logger.warn("Could not get sleep score for %s", date)
 
         day_data = {
-            'day': day,
+            'day': date,
             'start': daily_sleep.get('sleepStartTimestampGMT'),
             'end': daily_sleep.get('sleepEndTimestampGMT'),
             'total_sleep': daily_sleep.get('sleepTimeSeconds'),
@@ -262,7 +261,7 @@ class GarminRhrData(JsonFileProcessor):
             rhr = rhr_list[0].get('value')
             if rhr:
                 point = {
-                    'day': json_data['statisticsStartDate'].date(),
+                    'day': json_data['statisticsStartDate'],
                     'resting_heart_rate': rhr
                 }
                 RestingHeartRate.insert_or_update(
@@ -413,11 +412,10 @@ class GarminSummaryData(JsonFileProcessor):
         }
 
     def _process_json(self, json_data):
-        day = json_data['calendarDate'].date()
         distance = fitfile.Distance.from_meters(
             self._get_field(json_data, 'totalDistanceMeters', int))
         summary = {
-            'day': day,
+            'day': json_data['calendarDate'],
             'hr_min': self._get_field(json_data, 'minHeartRate', float),
             'hr_max': self._get_field(json_data, 'maxHeartRate', float),
             'rhr': self._get_field(json_data, 'restingHeartRate', float),
@@ -481,7 +479,7 @@ class GarminHydrationData(JsonFileProcessor):
         hydration_goal = fitfile.Volume.from_milliliters(json_data['baseGoalInML'])
         sweat_loss = fitfile.Volume.from_milliliters(json_data['sweatLossInML'])
         summary = {
-            'day': json_data['calendarDate'].date(),
+            'day': json_data['calendarDate'],
             'hydration_intake': hydration_intake.ml_or_oz(self.measurement_system, rounded=True),
             'hydration_goal': hydration_goal.ml_or_oz(self.measurement_system, rounded=True),
             'sweat_loss': sweat_loss.ml_or_oz(self.measurement_system, rounded=True)
