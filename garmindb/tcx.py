@@ -126,3 +126,16 @@ class Tcx(tcxfile.Tcx):
     def get_point_speed(self, point):
         """Return the speed readings in the point."""
         return Speed.from_mps(super().get_point_speed(point))
+
+    @property
+    def cadence_avg(self):
+        """Return the average of all cadence readings in the TCX file."""
+        val = self._Tcx__avg_of_tag(float, './/ns:Lap/ns:Cadence')
+        return int(round(val)) if val is not None else None
+
+    @property
+    def cadence_max(self):
+        """Return the maximum of all cadence readings in the TCX file."""
+        val = self._Tcx__max_of_tag(float, './/ns:Lap/ns:Cadence')
+        return int(round(val)) if val is not None else None
+

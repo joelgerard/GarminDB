@@ -89,7 +89,8 @@ class Download():
 
         try:
             self.garth.username
-        except GarthException:
+        except Exception as e:
+            root_logger.warning("Session expired or invalid, logging in again: %s", e)
             self.__login()
 
         profile_dir = self.gc_config.get_fit_files_dir()
