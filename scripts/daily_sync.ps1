@@ -34,10 +34,10 @@ if (-not (Test-Path $LogDir)) {
 $Timestamp = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
 Write-Output "[$Timestamp] Starting GarminDB Daily Sync..."
 
-$ConfigPath = "C:\Users\Joel\.GarminDb\GarminConnectConfig.json"
+$ConfigDir = "C:\Users\Joel\.GarminDb"
 $CliScript = Join-Path $ProjectDir "scripts\garmindb_cli.py"
 
-& $PythonExe $CliScript -f $ConfigPath --sleep --all --hrv --download --import --analyze --latest
+& $PythonExe $CliScript -f $ConfigDir --sleep --all --hrv --download --import --analyze --latest
 
 $ExitCode = $LASTEXITCODE
 $EndTimestamp = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
